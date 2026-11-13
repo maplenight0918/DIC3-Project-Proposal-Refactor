@@ -2,22 +2,13 @@
 
 專題：Energy Detective：建築用電異常調查 AI Agent
 
-組別：第25組
+作業性質：個人作業
 
-「物聯網數據分析與應用」期末專題提案。本階段交付研究、系統設計與簡報，系統程式與實驗尚未完成。
+「物聯網數據分析與應用」DIC3個人作業：以既有專題提案進行重構與OpenSpec設計規格化。本階段交付研究、系統設計與簡報，系統程式與實驗尚未完成。
 
 DIC3作業 Repository：<https://github.com/maplenight0918/DIC3-Project-Proposal-Refactor>。
 
-本repository為DIC3作業，從既有Energy Detective期中專題重構而來；原專題來源為<https://github.com/benson103081/energy-detective-agent>。本地後續工作位置為`DIC3/Project_Proposal_Refactor/`，不再以Final_proj作為本次作業工作目錄。
-
-## 組員（依學號排序）
-
-| 學號 | 姓名 |
-|---|---|
-| 7114056008 | 侯如蓁 |
-| 7114056093 | 蔡奇勳 |
-| 7114056126 | 施秉榕 |
-| 7114056143 | 陳睿彪 |
+本repository為DIC3個人作業，從既有Energy Detective期中專題重構而來；原始提案與簡報保留於research/與deliverables/。本地後續工作位置為`DIC3/Project_Proposal_Refactor/`，不再以Final_proj作為本次作業工作目錄。
 
 ## DIC3重構版：現在的閱讀與提交入口（2026-11-13）
 
