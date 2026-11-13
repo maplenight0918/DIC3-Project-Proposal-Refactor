@@ -1,0 +1,528 @@
+# Energy Detective重構版Proposal逐頁稿
+
+所有產品能力為規劃，實驗待測。技術頁隨DESIGN重建；一般頁編輯research/refactor/slides.json。
+
+
+## 01. Energy Detective｜提案重構與設計規格化
+
+建築用電異常調查 AI Agent
+
+第25組｜侯如蓁・蔡奇勳・施秉榕・陳睿彪
+
+DIC3 — Project Proposal Refactor using OpenSpec
+
+本次：提案、規格、驗證與可持續文件工作流程
+
+尚未完成：產品程式、能源實驗與Final交付
+
+2026-11-13｜原期中Proposal與29頁簡報完整保留
+
+
+## 02. Abstract｜A–F研究故事
+
+A 重要性：2025建築貢獻全球用電增量近45%，不是總量45%。
+
+B 限制：總表缺設備真值；有數字仍可能產生不受支持的結論。
+
+C 解方：Energy Detective提供附證據的初步調查建議。
+
+D 方法：LLM選受限工具；Python計算；領域條件限制推論。
+
+E 評估：B0/B1、三組流程、合成擾動、驗證器與規則消融。
+
+F 預期：可重現流程與可審核報告；尚無實測findings。
+
+[D1] IEA 2026；[A4][A6] 近似建築Agent研究
+
+
+## 03. Introduction｜為什麼值得做？
+
+能源資料增加，不代表設施管理者已知道下一步應查什麼。
+
+情境：校園／辦公管理者指定建築與歷史期間，追查偏高或偏低用電。
+
+核心問題：怎樣把統計偏離轉成可回查、又不越過證據的建議？
+
+用戶情境尚未訪談驗證；全球需求成長不能證明單棟浪費。
+
+研究價值需由比較回答，不能把採用LLM或Agent當成學術創新。
+
+[D1] 全球動機；[D7] EMIS實務；Proposal §2
+
+
+## 04. Related Work I｜AI工具與證據
+
+ReAct：根據外部觀察調整行動；不是單輪改寫摘要。[A1]
+
+Argos：可執行規則與偵測器融合；需要標註回饋。[A2]
+
+多模態告警複核：減少誤報也可能漏掉事件，校準不可偷看test。[A3]
+
+建築BAS Agent：Brick＋SPARQL/Python；有索引錯誤與文字遺漏。[A4]
+
+Time-RA：異常類型與說明學習；AI輔助標註不等於設備根因。[A5]
+
+2023經典＋2025研究；完整8欄Article Summary Table見Proposal §3.3
+
+
+## 05. Related Work II｜2026近似研究與研究缺口
+
+A6已結合七設備、SSA-LSTM、LSTM-VAE與三階段Agent。
+
+條件式取得背景與報告已有研究；不能再宣稱首次能源Agent。
+
+其16個人工情境與設備級資料，不等同公開總表的根因真值。
+
+本專題選定缺口：有限總表資料下，完整度、證據品質與降級能否兼顧？
+
+Our Project：同一B1、相同可用工具，驗證受限選擇的額外價值。
+
+[A6] Falouz et al., arXiv:2606.28467v1；只引作者稿，不推定正式出版
+
+
+## 06. Related Work III｜Domain know-how
+
+BDG2：1,636非住宅建築、3,053各類表、19場址、2016–2017。[D3]
+
+raw / cleaned目的不同；cleaned移除的零值可能是調查對象。[D6]
+
+建築用途、週期、季節與資料條件影響基準適用性。[D9]
+
+EMIS價值來自分析接到營運改善；不是單一Agent效益證明。[D7]
+
+量測與驗證需合理反事實及介入紀錄；偏差和不能叫已節電。[D8]
+
+AI與領域各6列比較；參考資料、結果、限制均分開
+
+
+## 07. Deep Research｜五個核心思維
+
+M1 正常必須有條件 → B0/B1比較，氣溫只作背景。
+
+M2 量測可信度先於解釋 → 缺值不補零，品質分母用完整格點。
+
+M3 結論解析度不超過資料 → 總表只給待查假說。
+
+M4 事件要接到行動 → 合併同方向事件並列下一步紀錄。
+
+M5 可重現不等於可外推 → 保存版本，單棟不代表臺灣校園。
+
+每項概念、證據、條件與限制詳見Proposal §4.1
+
+
+## 08. Deep Research｜三個專業爭點
+
+DQ1 積極清理 ↔ 保留可疑原值：採raw＋品質旗標，代價是不確定事件較多。
+
+DQ2 通用預訓練 ↔ 目標建築適應：先用B0/B1，代價是不學複雜非線性。
+
+DQ3 自適應調查 ↔ 固定完整流程：允許一次觀察決策，須證明值得其成本。
+
+這些是方法爭點與工程取捨，沒有證據宣稱是全領域最激烈前三名。
+
+若固定流程品質相同而更便宜，後續應採固定流程。
+
+雙方證據、共同原則與未解問題：Proposal §4.2；[D6][D9][A4][A6]
+
+
+## 09. Deep Research｜口試十問 1–5
+
+Q01 Why：為何不讓LLM直接讀CSV確診？總量無唯一設備分解。
+
+Q02 What-if：熱天高負載是否故障？B1未控制天氣，需替代解釋。
+
+Q03 Trade-off：門檻提高一定更好？少警示可能是漏報。
+
+Q04 Failure：零值與缺測如何分流？缺值未知，不補成觀測。
+
+Q05 Evidence：無真故障標籤能測什麼？合成敏感度與報告支持度。
+
+參考回答與設計影響完整收錄Proposal §4.3 Q01–Q05
+
+
+## 10. Deep Research｜口試十問 6–10
+
+Q06 Comparison：如何隔離Agent效益？同B1、工具、模型及報告提示詞。
+
+Q07 Design：正確ID就足夠？仍須核對值、單位、建築、期間與語意。
+
+Q08 Real-world：能報浪費多少電嗎？只報相對基準偏離及需查證資料。
+
+Q09 Failure：工具失敗怎樣辦？一次暫時I/O重試，有限預算與模板。
+
+Q10 Evidence：單棟三次能推全臺嗎？重跑穩定性不是跨場址外推。
+
+參考回答與設計影響完整收錄Proposal §4.3 Q06–Q10
+
+
+## 11. Proposed Scheme｜四種能力如何相接
+
+AI Agent：①需求解析、②受限規劃與一次觀察後決策。
+
+Data Analytics：③歷史資料、④品質、⑤基準／殘差／事件。
+
+Domain Knowledge：⑥作息、天氣、歷史與零值條件。
+
+Real-World Application：⑦供設施人員核對的繁中調查報告。
+
+⑧離線評估：分離分析、生成文字與選工具三種效果。
+
+本地CSV歷史重播；不需要實體感測器或設備控制
+
+
+## 12. System Architecture｜①–⑧責任與回饋
+
+
+
+技術唯一編輯來源：DESIGN.md
+
+
+圖解逐頁稿（簡報採相同模組／分支的版面摘要；完整定義見DESIGN）：
+
+```mermaid
+flowchart TB
+    U[設施管理者：建築與期間] --> A["① 需求解析與範圍驗證"]
+    A --> B["② 受限規劃與工具控制"]
+    subgraph TOOLS[可重算的分析工具]
+      direction LR
+      C["③ CSV取得與歷史重播"] --> D["④ 時序資料品質檢查"] --> E["⑤ 基準與異常分析"]
+    end
+    B --> C
+    C -.資料清單.-> A
+    E -.分析觀察.-> B
+    B -- 選適用規則 --> F["⑥ 領域規則與假說"]
+    E --> F
+    F --> G["⑦ 證據整合與報告"]
+    B -- 無事件或合理省略 --> G
+    D -.品質證據.-> G
+    E -.數值證據.-> G
+    G --> O[可追溯報告／人類查核]
+    G --> H["⑧ 離線評估"]
+    B -.執行紀錄.-> H
+```
+
+
+## 13. Data Contract｜來源與失敗分流
+
+BDG2 raw electricity＋metadata＋同場址weather；下載時鎖commit/hash。
+
+電表寬轉長，保留建築／電表、timestamp、value、unit、原始列欄。
+
+完整格點計覆蓋；每段暫定≥90%，訓練星期小時組至少4點。
+
+缺天氣：仍分析電力；時區／作息不明：停作息規則。
+
+單位或核心時間語意不明：停止；不把功率、電能、累積讀值混用。
+
+[D3][D6] 資料說明；數字是設計設定，非公認故障門檻
+
+
+## 14. Flowchart 1/3｜輸入與計畫修正
+
+
+
+完整圖見Proposal；所有節點受工具10次、LLM5次及保存錯誤守門器限制
+
+
+![Flowchart 1/3｜輸入與計畫修正](../../assets/refactor/flow-input.png)
+
+
+圖解逐頁稿（簡報採相同模組／分支的版面摘要；完整定義見DESIGN）：
+
+```mermaid
+flowchart LR
+ S[開始／初始化預算] --> M{資料清單成功？}
+ M -- 否 --> F[保存失敗／停止]
+ M -- 是 --> Q{建築與期間有效？}
+ Q -- 否 --> U[補問使用者／結束本次]
+ U -.補充後另次執行.-> S
+ Q -- 是 --> P{計畫合法？}
+ P -- 是 --> L[接資料與分析階段]
+ P -- 否 --> R{修正過？}
+ R -- 否 --> X[修正一次]
+ X --> P
+ R -- 是 --> F
+```
+
+
+## 15. Flowchart 2/3｜資料品質與有界重試
+
+
+
+完整圖見Proposal；所有節點受工具10次、LLM5次及保存錯誤守門器限制
+
+
+圖解逐頁稿（簡報採相同模組／分支的版面摘要；完整定義見DESIGN）：
+
+```mermaid
+flowchart TB
+ L[③載入資料] --> IO{成功？}
+ IO -- 否 --> R{暫時錯誤且未重試？}
+ R -- 是 --> L
+ R -- 否 --> F[保存失敗]
+ IO -- 是 --> D[④品質檢查]
+ D --> OK{工具成功？}
+ OK -- 否 --> F
+ OK -- 是 --> V{用電與單位足夠？}
+ V -- 否 --> I[資料不足報告]
+ V -- 是 --> W[缺天氣則停天氣規則]
+ W --> A[⑤固定切分與分析]
+ A --> AV{成功？}
+ AV -- 否 --> F
+ AV -- 是 --> O[接觀察決策階段]
+```
+
+
+## 16. Flowchart 3/3｜觀察決策與報告降級
+
+
+
+完整圖見Proposal；所有節點受工具10次、LLM5次及保存錯誤守門器限制
+
+
+圖解逐頁稿（簡報採相同模組／分支的版面摘要；完整定義見DESIGN）：
+
+```mermaid
+flowchart TB
+ O[②觀察後選擇] --> C{合法選擇？}
+ C -- 否 --> F[既有證據／受限報告]
+ C -- 是且選規則 --> K[⑥執行適用規則]
+ K --> KV{成功？}
+ KV -- 否 --> W[記錄警告／保留分析]
+ KV -- 是 --> R[⑦產生報告]
+ W --> R
+ C -- 直接報告並記理由 --> R
+ R --> RV{成功且主張有效？}
+ RV -- 否 --> T[本地固定模板]
+ RV -- 是 --> SAVE[保存報告／證據／紀錄]
+ T --> SAVE
+ F --> SAVE
+ SAVE --> E[⑧離線評估／結束]
+```
+
+
+## 17. Pseudocode 1/3｜Algorithm 1
+
+01 PROCEDURE INVESTIGATE(question, config, replay_until)
+
+02   INIT_GUARD(tool_budget = 10, llm_budget = 5, io_retry_used = FALSE, allowed_tools)
+
+03   manifest ← GUARDED_CALL(inspect_dataset, config.dataset_id)
+
+04   IF manifest failed THEN RETURN FAILURE_WITH_LOG(manifest.error)
+
+05   request ← PARSE_AND_VALIDATE(question, manifest)
+
+06   IF request lacks building or dates THEN RETURN NEED_INPUT(request.missing)
+
+07   plan ← LLM_PLAN(request, manifest, fixed_config, dependency_constraints)
+
+08   IF plan invalid THEN plan ← REPAIR_ONCE(plan, validation_errors)
+
+09   IF plan invalid THEN RETURN FAILURE_WITH_LOG("invalid_plan")
+
+10   data ← EXECUTE_GUARDED(plan.load_window)
+
+11   IF data is transient_io_error AND NOT io_retry_used THEN
+
+12       io_retry_used ← TRUE; data ← EXECUTE_GUARDED(plan.load_window, same_parameters)
+
+13   IF data failed THEN RETURN FAILURE_WITH_LOG(data.error)
+
+14   quality, valid_rows ← EXECUTE_GUARDED(plan.check_quality, data_reference); IF failed THEN RETURN FAILURE_WITH_LOG()
+
+15   IF unit/time_axis unresolved OR coverage insufficient THEN
+
+Input：question, config, replay_until｜Output：可追溯報告或明確狀態；全程保存紀錄
+
+
+## 18. Pseudocode 2/3｜Algorithm 1
+
+16       RETURN INSUFFICIENT_DATA_REPORT(quality)
+
+17   result ← EXECUTE_GUARDED(plan.analyze_energy, valid_rows, fixed_config)
+
+18   INSIDE analyze_energy:
+
+19       train, calibration, test ← CHRONOLOGICAL_SPLIT(valid_rows, fixed_dates)
+
+20       ASSERT max(train.time) < min(calibration.time)
+
+21       ASSERT max(calibration.time) < min(test.time) AND max(test.time) ≤ replay_until
+
+22       FOR method IN [GLOBAL_MEDIAN, HOUR_OF_WEEK_MEDIAN]
+
+23           baseline ← FIT_ONLY_ON_TRAIN(method, train)
+
+24           residual_cal ← calibration.value - PREDICT(baseline, calibration.time)
+
+25           threshold ← QUANTILE(abs(residual_cal), config.q)
+
+26           IF threshold = 0 THEN threshold ← VERIFIED_METER_RESOLUTION_OR_FAIL()
+
+27           residual_test ← test.value - PREDICT(baseline, test.time)
+
+28           flags ← abs(residual_test) > threshold
+
+29           events ← GROUP_ADJACENT_SAME_DIRECTION(flags, sign(residual_test), break_on_missing = TRUE)
+
+30           REGISTER_EVIDENCE(method, threshold, events, quality, data.source_rows)
+
+Input：question, config, replay_until｜Output：可追溯報告或明確狀態；全程保存紀錄
+
+
+## 19. Pseudocode 3/3｜Algorithm 1
+
+31   IF result failed THEN RETURN FAILURE_WITH_LOG(result.error)
+
+32   eligible ← RULES_ALLOWED_BY(result.events, weather, schedule, timezone)
+
+33   next ← LLM_NEXT_STEP(plan, quality, result, eligible)
+
+34   IF next is invalid OR exceeds dependency/budget THEN RETURN RESTRICTED_REPORT_WITH_LOG()
+
+35   IF next.tool = apply_domain_rules THEN
+
+36       rules ← EXECUTE_GUARDED(next, rule_ids subset_of eligible); IF failed THEN RECORD_WARNING_AND_KEEP_ANALYSIS()
+
+37   ELSE ASSERT next.tool = build_report; RECORD_SKIPPED_RULES(next.reason)
+
+38   evidence ← FREEZE_EVIDENCE_STORE(result, rules_if_any, quality, tool_log)
+
+39   report ← GUARDED_CALL(build_report, request, evidence, require_evidence_ids = TRUE)
+
+40   IF report failed OR NOT VALIDATE_REFERENCES_AND_NUMBERS(report, evidence) THEN
+
+41       report ← DETERMINISTIC_TEMPLATE(request, evidence)
+
+42   SAVE(report, evidence, config, tool_log)
+
+43   RETURN report
+
+44 END PROCEDURE
+
+Input：question, config, replay_until｜Output：可追溯報告或明確狀態；全程保存紀錄
+
+
+## 20. Evaluation｜RQ1–RQ3與公平比較
+
+RQ1：相同有效test點，B1的MAE是否小於B0？零改善也是結果。
+
+RQ2：同B1與證據，Agent能否維持完整度並減少規則評估？
+
+RQ3：四類結構置錯可否拒絕？正確控制不得被誤拒。
+
+三組：固定模板、固定流程＋LLM、受限Agent；相同模型／報告提示詞。
+
+消融：離線移除驗證器；移除領域解釋但保留品質及拒絕根因政策。
+
+research/refactor/evaluation.md；預定驗證，未執行
+
+
+## 21. Evaluation｜資料、真值與洩漏防範
+
+單棟固定12週：8週train → 2週calibration → 2週test；q=.99 linear。
+
+只依用途及品質排序選樣，不按test MAE或警示數挑建築。
+
+原test保持唯讀；副本seed42注入尖峰／持續增加／零值。
+
+預定各10件；不足報實際件數，原已警示另標，不重訓門檻。
+
+人工審閱是主張品質標籤；合成注入不是現場設備故障真值。
+
+期間、覆蓋、件數均為課程設計設定；非統計power或效能保證
+
+
+## 22. Evaluation｜成功判準與失敗不能藏起來
+
+MAE＝有效點絕對殘差和／點數；注入命中＝命中事件／實際事件。
+
+主張正確率與必要資訊完整度一起報；無事實分母記N/A。
+
+漏失延遲N/A並報漏失件數；一般失敗仍納入任務分母。
+
+設計目標：限制案例全遵守、錯誤主張拒絕、呼叫上限不超標。
+
+沒有預設準確率或節能率；較少規則但更多tokens不叫總成本改善。
+
+C01–C10＋K01–K12；兩人獨立審閱，缺人需揭露
+
+
+## 23. Illustrative Only｜偏離240 kWh不是節電
+
+假設四小時各180 kWh，B1各120，校準門檻30。
+
+殘差各60>30，連續同方向合成一事件：4×60＝240 kWh。
+
+只能說「高於歷史基準，請核對活動與排程」。
+
+不能說「某空調故障」或「已省下240 kWh」。
+
+第三小時缺測時中斷事件，不補零、不再宣稱完整四小時。
+
+純說明fixture，不是BDG2實驗數據
+
+
+## 24. OpenSpec｜從設計到可持續開發
+
+OpenSpec 2.0.0／spec-driven；已以CLI init配置Codex。
+
+Proposal：為何變更及非目標；Specs：14個產品需求與具體情境。
+
+Design：ADR與主要DESIGN連結；Tasks：依賴、驗收、狀態。
+
+主spec只有既有文件能力；五個產品能力留在active change。
+
+文件完成可勾選；產品未實作不勾選、不sync、不archive。
+
+change：refactor-energy-proposal；validate嚴格通過不等於產品通過
+
+
+## 25. Expected Outcomes｜本次與期末邊界
+
+本次：完整Proposal、中英摘要、PPT、DESIGN、OpenSpec與查核紀錄。
+
+預期產品：可重現調查、可核對證據及真實比較結果；目前待測。
+
+限制：單棟、歷史資料、無設備真值、LLM語意風險、缺現場訪談。
+
+後續依資料→分析→Agent/證據→評估順序完成未勾選任務。
+
+期末另交完整程式、結果、>20頁Final PPT與>10分鐘影片。
+
+Proposal不套用Final頁數要求；本次頁數由內容可讀性決定
+
+
+## 26. References｜AI原始研究
+
+[A1] Yao et al., ReAct, ICLR 2023；arXiv:2210.03629v3。
+
+[A2] Gu et al., Argos, 2025；arXiv:2501.14170v1。
+
+[A3] Yang et al., Refining Time Series Anomaly Detectors using LLMs, 2025；2503.21833v1。
+
+[A4] Mulayim et al., BAS time-series analysis using LLMs, 2025；DOI 10.20357/B73W4C。
+
+[A5] Yang et al., Time-RA, 2025；arXiv:2507.15066v1。
+
+[A6] Falouz et al., Appliance-Level Energy Anomaly Pipeline, 2026；2606.28467v1。
+
+完整題名、URL、DOI與版本：Proposal §8；本次回查2026-11-13
+
+
+## 27. References｜領域與資料來源
+
+[D1] IEA, Global Energy Review 2026 — Electricity demand。
+
+[D3] Miller et al., Building Data Genome 2, Scientific Data 7, 368 (2020)；10.1038/s41597-020-00712-x。
+
+[D4–D6] BUDS Lab：repository、LICENSE、Meters data features。
+
+[D7] Kramer et al., Proving the Business Case for Building Analytics (2020)；10.20357/B7G022。
+
+[D8] U.S. DOE FEMP, Measurement and Verification Options官方指南。
+
+[D9] Park et al., TS Foundation Models for Building Energy (2025)；2506.00630v1。
+
+授權、查核範圍與未確認正式書目：docs/refactor/source-audit.md

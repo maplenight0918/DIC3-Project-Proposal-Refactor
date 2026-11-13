@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+.build-deps/
+__pycache__/
+*.pyc
+data/raw/
+data/processed/
+~$*
+assets/review.png
+deliverables/*.zip
+
+# Local tools for the DIC3 document refactor
+.build-diagrams/
+deliverables/refactor/submission.zip

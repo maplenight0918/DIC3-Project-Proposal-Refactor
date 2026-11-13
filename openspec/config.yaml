@@ -1,0 +1,21 @@
+schema: spec-driven
+context: |
+  Language: 繁體中文. Keep OpenSpec structural headings and SHALL/MUST keywords in English.
+  Project: Energy Detective, Group 25. Proposal refactor and design specification only.
+  Current implemented code builds documents; no energy Agent, dataset or experiments yet.
+  DESIGN.md is the technical editing source; research/refactor/evaluation.md owns metrics.
+  Preserve original proposal assets; new outputs go to deliverables/refactor and assets/refactor.
+  Main specs describe current behavior; active change specs describe unimplemented product behavior.
+rules:
+  proposal:
+    - Distinguish observed facts, assumptions, planned behavior and non-goals.
+  specs:
+    - Include stable requirement IDs, concrete scenarios, missing input and failure handling.
+  design:
+    - Reference DESIGN.md and evaluation.md rather than duplicate technical definitions.
+  tasks:
+    - Mark only actually completed work; include dependencies and acceptance evidence.
+operations:
+  archive:
+    guidance:
+      - Do not archive while product implementation tasks are incomplete.

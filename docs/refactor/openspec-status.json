@@ -1,0 +1,108 @@
+{
+  "changeName": "refactor-energy-proposal",
+  "schemaName": "spec-driven",
+  "planningHome": {
+    "kind": "repo",
+    "root": "/user_data/IoT/DIC3/Project_Proposal_Refactor",
+    "changesDir": "/user_data/IoT/DIC3/Project_Proposal_Refactor/openspec/changes",
+    "defaultSchema": "spec-driven"
+  },
+  "changeRoot": "/user_data/IoT/DIC3/Project_Proposal_Refactor/openspec/changes/refactor-energy-proposal",
+  "artifactPaths": {
+    "proposal": {
+      "outputPath": "proposal.md",
+      "resolvedOutputPath": "/user_data/IoT/DIC3/Project_Proposal_Refactor/openspec/changes/refactor-energy-proposal/proposal.md",
+      "existingOutputPaths": [
+        "/user_data/IoT/DIC3/Project_Proposal_Refactor/openspec/changes/refactor-energy-proposal/proposal.md"
+      ]
+    },
+    "specs": {
+      "outputPath": "specs/**/*.md",
+      "resolvedOutputPath": "/user_data/IoT/DIC3/Project_Proposal_Refactor/openspec/changes/refactor-energy-proposal/specs/**/*.md",
+      "existingOutputPaths": [
+        "/user_data/IoT/DIC3/Project_Proposal_Refactor/openspec/changes/refactor-energy-proposal/specs/data-quality/spec.md",
+        "/user_data/IoT/DIC3/Project_Proposal_Refactor/openspec/changes/refactor-energy-proposal/specs/energy-analysis/spec.md",
+        "/user_data/IoT/DIC3/Project_Proposal_Refactor/openspec/changes/refactor-energy-proposal/specs/evidence-report/spec.md",
+        "/user_data/IoT/DIC3/Project_Proposal_Refactor/openspec/changes/refactor-energy-proposal/specs/offline-evaluation/spec.md",
+        "/user_data/IoT/DIC3/Project_Proposal_Refactor/openspec/changes/refactor-energy-proposal/specs/query-control/spec.md"
+      ]
+    },
+    "design": {
+      "outputPath": "design.md",
+      "resolvedOutputPath": "/user_data/IoT/DIC3/Project_Proposal_Refactor/openspec/changes/refactor-energy-proposal/design.md",
+      "existingOutputPaths": [
+        "/user_data/IoT/DIC3/Project_Proposal_Refactor/openspec/changes/refactor-energy-proposal/design.md"
+      ]
+    },
+    "tasks": {
+      "outputPath": "tasks.md",
+      "resolvedOutputPath": "/user_data/IoT/DIC3/Project_Proposal_Refactor/openspec/changes/refactor-energy-proposal/tasks.md",
+      "existingOutputPaths": [
+        "/user_data/IoT/DIC3/Project_Proposal_Refactor/openspec/changes/refactor-energy-proposal/tasks.md"
+      ]
+    }
+  },
+  "isPlanningComplete": true,
+  "isComplete": true,
+  "applyRequires": [
+    "tasks"
+  ],
+  "nextSteps": [
+    "All planning artifacts are complete. Run openspec instructions apply --change \"refactor-energy-proposal\" --json to inspect implementation progress."
+  ],
+  "actionContext": {
+    "mode": "repo-local",
+    "sourceOfTruth": "repo",
+    "planningArtifacts": [
+      "proposal",
+      "specs",
+      "design",
+      "tasks"
+    ],
+    "linkedContext": [],
+    "allowedEditRoots": [
+      "/user_data/IoT/DIC3/Project_Proposal_Refactor"
+    ],
+    "requiresAffectedAreaSelection": false,
+    "constraints": [
+      "Repo-local change artifacts and implementation edits are scoped to this project."
+    ]
+  },
+  "artifacts": [
+    {
+      "id": "proposal",
+      "outputPath": "proposal.md",
+      "status": "done",
+      "requires": []
+    },
+    {
+      "id": "specs",
+      "outputPath": "specs/**/*.md",
+      "status": "done",
+      "requires": [
+        "proposal"
+      ]
+    },
+    {
+      "id": "design",
+      "outputPath": "design.md",
+      "status": "done",
+      "requires": [
+        "proposal"
+      ]
+    },
+    {
+      "id": "tasks",
+      "outputPath": "tasks.md",
+      "status": "done",
+      "requires": [
+        "specs",
+        "design"
+      ]
+    }
+  ],
+  "root": {
+    "path": "/user_data/IoT/DIC3/Project_Proposal_Refactor",
+    "source": "nearest"
+  }
+}
